@@ -1,45 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import Note from "./Note";
 import CreateArea from "./CreateArea";
 
 function App() {
-    const [title, setTitle] = React.useState("");
-    const [content, setContent] = React.useState("");
-    const [notes, setNotes] = React.useState([]);
-    const [add, setAdd] = React.useState(false);
-    const [del, setDel] = React.useState(false);
+    const [notes, setNotes] = useState([]);
 
-    const titleHandler = (event) => {
-        setTitle(event.target.value);
-    };
+    function addNote(newNote) {
+        setNotes((prevNotes) => {
+            return [...prevNotes, newNote];
+        });
+    }
 
-    const contentHandler = (event) => {
-        setContent(event.target.value);
-    };
+    function deleteNote(id) {
+        setNotes((prevNotes) => {
+            return prevNotes.filter((noteItem, index) => {
+                return index !== id;
+            });
+        });
+    }
 
-    // const noteHandler = (event) => {};
-
-    const addHandler = (event) => {
-        event.preventDefault();
-        setNotes((prev) => [...prev, { title: title, content: content }]);
-        setTitle("");
-        setContent("");
-        setAdd(true);
-    };
-
-    const delHandler = (id) => () => {
-        setNotes((prev) => prev.filter((note, idx) => idx !== id));
-        setDel(true);
-    };
     return (
         <div>
             <Header />
-            <CreateArea titleFunc={titleHandler} contentFunc={contentHandler} addFunc={addHandler} titleValue={title} contentValue={content}/>
-            {notes.map((note, idx) => (
-                <Note key={idx} title={note.title} content={note.content} id={idx} delFunc={delHandler} />
-            ))}
+            <CreateArea onAdd={addNote} />
+            {notes.map((noteItem, index) => {
+                return <Note key={index} id={index} title={noteItem.title} content={noteItem.content} onDelete={deleteNote} />;
+            })}
             <Footer />
         </div>
     );
